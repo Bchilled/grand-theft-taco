@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Grand Theft Taco: IRS Collections</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#000;display:flex;align-items:center;justify-content:center;height:100vh;font-family:'Courier New',monospace;overflow:hidden;}
+  #whopperScreen{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;animation:wjFade 0.8s ease 6.5s forwards;}
+  .wj-presents{color:#444;font-size:12px;letter-spacing:10px;text-transform:uppercase;opacity:0;animation:fadeUp 1s ease 0.5s forwards;margin-bottom:24px;}
+  .wj-logo{color:#fff;font-size:82px;font-weight:900;letter-spacing:-3px;opacity:0;animation:fadeUp 1s ease 1s forwards;text-shadow:0 0 80px rgba(255,160,0,0.5);}
+  .wj-logo span{color:#fa0;}
+  .wj-line{width:0;height:2px;background:linear-gradient(90deg,transparent,#fa0,transparent);opacity:0;margin:14px auto;animation:lineG 1s ease 1.8s forwards;}
+  .wj-sub{color:#fa0;font-size:13px;letter-spacing:12px;text-transform:uppercase;opacity:0;animation:fadeUp 0.8s ease 2s forwards;}
+  .wj-tagline{color:#2a2a2a;font-size:11px;letter-spacing:3px;font-style:italic;opacity:0;animation:fadeUp 0.8s ease 2.8s forwards;margin-top:50px;}
+  @keyframes wjFade{to{opacity:0;pointer-events:none;display:none;}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes lineG{to{width:320px;opacity:1}}
+  #splash{position:fixed;inset:0;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:100;}
+  .gtt-title{color:#e63;font-size:42px;font-weight:900;letter-spacing:2px;text-align:center;line-height:1.2;opacity:0;animation:fadeUp 1s ease 0.3s forwards;}
+  .gtt-sub{color:#fa0;font-size:13px;letter-spacing:8px;opacity:0;animation:fadeUp 0.8s ease 1s forwards;margin-top:8px;}
+  .gtt-start{color:#fff;font-size:14px;opacity:0;animation:blink 1s ease 2s infinite;margin-top:44px;cursor:pointer;padding:10px 24px;border:1px solid #333;}
+  .gtt-start:hover{background:#111;}
+  @keyframes blink{0%,100%{opacity:0}50%{opacity:1}}
+  #gameContainer{position:relative;display:none;}
+  canvas{display:block;cursor:none;}
+  #hudTL{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:4px;pointer-events:none;}
+  .hud-row{font-size:12px;font-weight:bold;}
+  #ammoEl{color:#ff0;text-shadow:0 0 6px #ff0;}
+  #rpgEl{color:#f60;text-shadow:0 0 6px #f60;display:none;}
+  #weapEl{color:#0ff;}
+  #moneyEl{color:#0f0;text-shadow:0 0 6px #0f0;}
+  #invEl{color:#fa0;font-size:11px;}
+  #hpWrap{display:flex;align-items:center;gap:6px;}
+  #hpCircle{width:38px;height:38px;border-radius:50%;border:3px solid #f00;position:relative;overflow:hidden;}
+  #hpFill{position:absolute;bottom:0;left:0;right:0;background:#f00;transition:height 0.15s;box-shadow:0 0 8px #f00;}
+  #hpLabel{color:#f00;font-size:10px;text-shadow:0 0 6px #f00;}
+  #irsHud{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:none;flex-direction:column;align-items:center;pointer-events:none;}
+  #irsIcons{display:flex;gap:3px;}
+  .irsI{color:#f80;font-size:18px;animation:irsF 0.5s infinite;}
+  #irsLbl{color:#f80;font-size:10px;letter-spacing:3px;margin-top:2px;}
+  @keyframes irsF{0%,100%{opacity:1}50%{opacity:0.15}}
+  #msgBox{position:absolute;bottom:50px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.9);border:1px solid #0f0;color:#0f0;padding:6px 14px;font-size:12px;border-radius:3px;max-width:440px;text-align:center;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;}
+  #ctrlBar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);color:#2a2a2a;font-size:10px;pointer-events:none;white-space:nowrap;}
+  #deathScr{position:absolute;inset:0;background:rgba(0,0,0,0.88);display:none;flex-direction:column;align-items:center;justify-content:center;}
+  #deathScr h2{color:#f00;font-size:30px;margin-bottom:8px;text-shadow:0 0 20px #f00;}
+  #deathScr p{color:#666;font-size:13px;margin-bottom:26px;}
+  #deathScr button{background:#c33;color:#fff;border:none;padding:10px 26px;font-family:'Courier New',monospace;font-size:14px;cursor:pointer;}
+  #deathScr button:hover{background:#e44;}
+  #waveEl{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);color:#f80;font-size:26px;font-weight:bold;text-shadow:0 0 20px #f80;opacity:0;pointer-events:none;transition:opacity 0.4s;text-align:center;}
+</style>
+</head>
+<body>
+
+<div id="whopperScreen">
+  <div class="wj-presents">PRESENTS</div>
+  <div class="wj-logo">WHOPPER<span>JR</span></div>
+  <div class="wj-line"></div>
+  <div class="wj-sub">Entertainment Studios</div>
+  <div class="wj-tagline">"we put the meat in the code"</div>
+</div>
+
+<div id="splash">
+  <div class="gtt-title">GRAND THEFT TACO<br>IRS COLLECTIONS</div>
+  <div class="gtt-sub">PHASE 1 DEMO</div>
+  <div class="gtt-start" onclick="startGame()">[ CLICK TO START ]</div>
+</div>
+
+<div id="gameContainer">
+  <canvas id="gameCanvas"></canvas>
+  <div id="hudTL">
+    <div id="ammoEl" class="hud-row">🌽 GLOCK: 30</div>
+    <div id="rpgEl" class="hud-row">🌽 RPG: 0</div>
+    <div id="weapEl" class="hud-row">🔫 SALSA GLOCK [Q=switch]</div>
+    <div id="moneyEl" class="hud-row">💵 $0</div>
+    <div id="invEl" class="hud-row">🌮 INVENTORY: empty [H=heal]</div>
+    <div id="hpWrap">
+      <div id="hpCircle"><div id="hpFill" style="height:100%"></div></div>
+      <div id="hpLabel">HEALTH</div>
+    </div>
+  </div>
+  <div id="irsHud">
+    <div id="irsIcons"></div>
+    <div id="irsLbl">IRS SEARCHING</div>
+  </div>
+  <div id="msgBox"></div>
+  <div id="ctrlBar">WASD=MOVE | MOUSE=AIM | LMB=SHOOT | Q=SWITCH WEAPON | E=INTERACT | H=HEAL</div>
+  <div id="waveEl"></div>
+  <div id="deathScr">
+    <h2>BUSTED BY THE IRS</h2>
+    <p id="deathMsg">You lost your illegal money.</p>
+    <button onclick="restartGame()">TRY AGAIN</button>
+  </div>
+</div>
+
+<script>
+// ---- CANVAS SETUP ----
+const W=900,H=650;
+const canvas=document.getElementById('gameCanvas');
+const ctx=canvas.getContext('2d');
+canvas.width=W; canvas.height=H;
+
+// ---- WORLD GRID ----
+// 7x7 city blocks, 240x180 each, 160px streets between
+const BOFF=100,BW=240,BH=180,STR=160,STEP=BW+STR;
+const WW=BOFF*2+7*STEP, WH=BOFF*2+7*STEP;
+
+function streetX(col){return BOFF+col*STEP+BW+STR/2;}
+function streetY(row){return BOFF+row*STEP+BH+STR/2;}
+function inter(col,row){return{x:streetX(col),y:streetY(row)};}
+
+// ---- STATE ----
+let P,bullets,enemies,stands,ings,parts,homies,wPickups,keys,mouse;
+let money,ammo,rpgAmmo,weapon,hp,irsLv,evasion,dead,wave,inv;
+let buildings,camX,camY,lastT=0;
+
+// ---- INIT ----
+function initGame(){
+  keys={}; mouse={x:W/2,y:H/2,down:false};
+  money=0; ammo=30; rpgAmmo=5; weapon='glock';
+  hp=100; irsLv=0; evasion=0; dead=false; wave=1;
+  inv={beef:0,cheese:0,salsa:0,guac:0,beans:0};
+  bullets=[]; enemies=[]; parts=[]; camX=0; camY=0;
+
+  // Buildings — skip center 2x2 for open plaza + player spawn
+  buildings=[];
+  const skip=new Set(['3,3','3,4','4,3','4,4']);
+  const cols=['#263426','#362626','#262636','#363620','#223030'];
+  for(let c=0;c<7;c++) for(let r=0;r<7;r++){
+    if(skip.has(`${c},${r}`)) continue;
+    buildings.push({x:BOFF+c*STEP,y:BOFF+r*STEP,w:BW,h:BH,col:cols[(c*7+r)%5]});
+  }
+
+  // Player — spawns in open plaza center
+  P={x:streetX(3)+STR/2,y:streetY(3)+STR/2,angle:0,speed:3.6,size:22,sc:0,inv:0};
+  camX=clamp(P.x-W/2,0,WW-W);
+  camY=clamp(P.y-H/2,0,WH-H);
+
+  // Taco stands at intersections
+  stands=[
+    {...inter(0,0),money:150,cd:0,done:false},
+    {...inter(2,1),money:300,cd:0,done:false},
+    {...inter(5,0),money:200,cd:0,done:false},
+    {...inter(0,5),money:250,cd:0,done:false},
+    {...inter(6,2),money:180,cd:0,done:false},
+    {...inter(3,6),money:350,cd:0,done:false},
+    {...inter(6,6),money:220,cd:0,done:false},
+  ];
+
+  // Ingredients on streets
+  const iTypes=['beef','cheese','salsa','guac','beans'];
+  const iPos=[inter(1,0),inter(4,0),inter(0,2),inter(6,1),inter(1,4),
+              inter(5,3),inter(2,6),inter(6,5),inter(0,6),inter(4,5),inter(3,1),inter(5,5)];
+  ings=iPos.map((p,i)=>({...p,type:iTypes[i%5],done:false}));
+
+  // Homies — unique streetwear NPCs
+  const hPos=[inter(1,1),inter(5,1),inter(0,3),inter(6,3),inter(2,5),inter(4,6),inter(1,6),inter(5,4)];
+  const hCols=['#8B4513','#C0392B','#1A5276','#145A32','#6C3483','#784212','#17202A','#B7950B'];
+  const hHats=['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c','#e67e22','#ecf0f1'];
+  homies=hPos.map((p,i)=>({
+    x:p.x+(Math.random()-0.5)*50, y:p.y+(Math.random()-0.5)*50,
+    cd:0, body:hCols[i], hat:hHats[i], size:13, bob:Math.random()*Math.PI*2
+  }));
+
+  // Corn RPG pickups — RIGHT near spawn so hard to miss
+  wPickups=[
+    {x:P.x+90,y:P.y,done:false,bob:0},
+    {x:streetX(1),y:streetY(1),done:false,bob:2},
+    {x:streetX(5),y:streetY(5),done:false,bob:4},
+  ];
+
+  spawnWave(1);
+  setTimeout(()=>msg("📱 Homie: WASD move. E to grab stuff/talk to homies. H to heal with ingredients!",5000),600);
+  setTimeout(()=>msg("📱 Homie: CORN RPG is RIGHT NEXT TO YOU → grab it (E) and press Q to switch!",5000),7000);
+}
+
+function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v));}
+function dist(x1,y1,x2,y2){return Math.sqrt((x2-x1)**2+(y2-y1)**2);}
+
+function msg(txt,dur=3000){
+  const el=document.getElementById('msgBox');
+  el.textContent=txt; el.style.opacity='1';
+  clearTimeout(window._mt);
+  window._mt=setTimeout(()=>el.style.opacity='0',dur);
+}
+
+function puff(x,y,col,n=6,spd=4){
+  for(let i=0;i<n;i++){
+    const a=Math.random()*Math.PI*2,s=Math.random()*spd;
+    parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:40+Math.random()*30,ml:70,col,sz:2+Math.random()*3});
+  }
+}
+
+function wallHit(x,y,r){
+  for(const b of buildings)
+    if(x+r>b.x&&x-r<b.x+b.w&&y+r>b.y&&y-r<b.y+b.h) return true;
+  return false;
+}
+
+function spawnWave(w){
+  const n=Math.min(3+w*2,22);
+  for(let i=0;i<n;i++) spawnEnemy();
+}
+
+function spawnEnemy(){
+  let x,y,t=0;
+  do{x=BOFF+Math.random()*(WW-BOFF*2);y=BOFF+Math.random()*(WH-BOFF*2);t++;}
+  while(dist(x,y,P.x,P.y)<550&&t<30);
+  enemies.push({x,y,angle:0,spd:1.3+Math.random()*0.7+wave*0.13,sz:15,hp:2,sc:30+Math.random()*80,fl:0});
+}
+
+// ---- GAME LOOP ----
+function gameLoop(ts){
+  const dt=Math.min((ts-lastT)/16.67,3); lastT=ts;
+  if(!dead) update(dt);
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+function update(dt){
+  // Movement
+  let dx=0,dy=0;
+  if(keys['w']||keys['arrowup']) dy-=1;
+  if(keys['s']||keys['arrowdown']) dy+=1;
+  if(keys['a']||keys['arrowleft']) dx-=1;
+  if(keys['d']||keys['arrowright']) dx+=1;
+  if(dx&&dy){dx*=0.707;dy*=0.707;}
+  const nx=P.x+dx*P.speed*dt, ny=P.y+dy*P.speed*dt;
+  if(!wallHit(nx,P.y,P.size)&&nx>P.size&&nx<WW-P.size) P.x=nx;
+  if(!wallHit(P.x,ny,P.size)&&ny>P.size&&ny<WH-P.size) P.y=ny;
+  P.angle=Math.atan2((mouse.y+camY)-P.y,(mouse.x+camX)-P.x);
+
+  // Shoot
+  if(P.sc>0) P.sc-=dt;
+  if(mouse.down&&P.sc<=0){
+    if(weapon==='glock'&&ammo>0){
+      ammo--; P.sc=7;
+      shoot(P.x,P.y,P.angle,13,'pg',4,1);
+      puff(P.x,P.y,'#ff0',2,2);
+    } else if(weapon==='rpg'&&rpgAmmo>0){
+      rpgAmmo--; P.sc=50;
+      shoot(P.x,P.y,P.angle,9,'pr',8,5);
+      puff(P.x,P.y,'#f80',5,3);
+    }
+  }
+
+  // Auto-refill glock for demo
+  if(ammo<=0&&Math.random()<0.002){ ammo=20; msg("📱 Found dropped ammo!",2000); }
+
+  // Heal — H key
+  if(keys['h']){
+    keys['h']=false;
+    if(hp>=100){msg("❤️ Already full health!",1500);}
+    else{
+      let healed=false;
+      for(const t in inv){if(inv[t]>0){inv[t]--;hp=Math.min(100,hp+25);puff(P.x,P.y,'#0f0',12,3);msg(`🌮 Used ${t.toUpperCase()} to heal +25 HP! Feeling spicy!`,2500);healed=true;break;}}
+      if(!healed) msg("❌ No ingredients! Go pick some up first!",2500);
+    }
+  }
+
+  // Switch weapon — Q
+  if(keys['q']){keys['q']=false;weapon=weapon==='glock'?'rpg':'glock';msg(`🔫 Switched to: ${weapon==='glock'?'SALSA GLOCK':'CORN RPG'}`,1500);}
+
+  if(P.inv>0) P.inv-=dt;
+
+  // Camera
+  camX+=((P.x-W/2)-camX)*0.1*dt;
+  camY+=((P.y-H/2)-camY)*0.1*dt;
+  camX=clamp(camX,0,WW-W); camY=clamp(camY,0,WH-H);
+
+  // IRS evasion timer
+  if(irsLv>0){
+    const seen=enemies.some(e=>dist(e.x,e.y,P.x,P.y)<290);
+    if(!seen){evasion+=dt;if(evasion>45*60){irsLv=0;evasion=0;msg("✅ Lost the IRS! You're clear!",3000);}}
+    else evasion=0;
+  }
+
+  // Interact — E
+  if(keys['e']){
+    keys['e']=false;
+    // Stands
+    for(const s of stands) if(!s.done&&dist(P.x,P.y,s.x,s.y)<58){
+      s.done=true;s.cd=600;money+=s.money;
+      irsLv=Math.min(5,irsLv+1);evasion=0;
+      puff(s.x,s.y,'#0f0',14);
+      msg(`💰 Collected $${s.money}! IRS heat rising! MOVE!`,3000);
+      for(let i=0;i<irsLv+1;i++) spawnEnemy();
+    }
+    // Ingredients
+    for(const g of ings) if(!g.done&&dist(P.x,P.y,g.x,g.y)<48){
+      g.done=true;inv[g.type]++;puff(g.x,g.y,'#fa0',8);
+      msg(`🌮 Picked up ${g.type.toUpperCase()}! Press H when injured to heal!`,2500);
+    }
+    // RPG pickups
+    for(const wp of wPickups) if(!wp.done&&dist(P.x,P.y,wp.x,wp.y)<52){
+      wp.done=true;rpgAmmo+=3;weapon='rpg';puff(wp.x,wp.y,'#f60',16,6);
+      msg("🌽 CORN RPG ACQUIRED! +3 rockets! Q to switch weapons!",4000);
+    }
+    // Homies
+    for(const h of homies) if(h.cd<=0&&dist(P.x,P.y,h.x,h.y)<62){
+      h.cd=600;ammo+=15;puff(h.x,h.y,'#0ff',10,3);
+      const lines=["Homie: Stay frosty! Here's some ammo, stay off the main roads.","Homie: Press H to heal with your taco ingredients!","Homie: The RPG is NASTY. One shot kills on IRS cars!","Homie: Collect from stands for bread. Heat goes up fast tho!","Homie: If IRS is on you, run and hide for 45 seconds!","Homie: Get more stands = more bread = more problems lol"];
+      msg(`📱 ${lines[Math.floor(Math.random()*lines.length)]} (+15 ammo)`,4000);
+    }
+  }
+
+  // Homie + stand cooldowns
+  for(const h of homies) if(h.cd>0) h.cd-=dt;
+  for(const s of stands) if(s.cd>0){s.cd-=dt;if(s.cd<=0)s.done=false;}
+
+  // Bullets
+  for(let i=bullets.length-1;i>=0;i--){
+    const b=bullets[i];
+    b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;
+    if(b.life<=0||wallHit(b.x,b.y,b.sz)){
+      if(b.t==='pr') rpgBlast(b.x,b.y);
+      bullets.splice(i,1);continue;
+    }
+    if(b.t==='pg'||b.t==='pr'){
+      let hit=false;
+      for(let j=enemies.length-1;j>=0;j--){
+        if(dist(b.x,b.y,enemies[j].x,enemies[j].y)<enemies[j].sz+b.sz){
+          if(b.t==='pr'){rpgBlast(b.x,b.y);bullets.splice(i,1);hit=true;break;}
+          enemies[j].hp-=b.dmg;puff(enemies[j].x,enemies[j].y,'#f44',5);
+          bullets.splice(i,1);hit=true;
+          if(enemies[j].hp<=0){puff(enemies[j].x,enemies[j].y,'#f80',16);enemies.splice(j,1);if(Math.random()<0.4)ammo+=6;}
+          break;
+        }
+      }
+      if(hit) continue;
+    }
+    if(b.t==='en'&&P.inv<=0&&dist(b.x,b.y,P.x,P.y)<P.size+b.sz){
+      hp-=12;P.inv=50;puff(P.x,P.y,'#f00',8);bullets.splice(i,1);
+      if(hp<=0){die();return;}
+    }
+  }
+
+  // Enemies
+  for(const e of enemies){
+    const d=dist(e.x,e.y,P.x,P.y);
+    const a=Math.atan2(P.y-e.y,P.x-e.x);
+    e.angle=a;e.fl=(e.fl+dt)%40;
+    if(d>55){
+      const ex2=e.x+Math.cos(a)*e.spd*dt,ey2=e.y+Math.sin(a)*e.spd*dt;
+      if(!wallHit(ex2,e.y,e.sz)) e.x=ex2;
+      if(!wallHit(e.x,ey2,e.sz)) e.y=ey2;
+    } else if(P.inv<=0){hp-=0.22*dt;if(hp<=0){die();return;}}
+    if(e.sc>0)e.sc-=dt;
+    else if(d<390){e.sc=55+Math.random()*55;shoot(e.x,e.y,a+(Math.random()-0.5)*0.2,6,'en',3,1);}
+  }
+
+  // Particles
+  for(let i=parts.length-1;i>=0;i--){
+    const p=parts[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=0.9;p.vy*=0.9;p.life-=dt;
+    if(p.life<=0) parts.splice(i,1);
+  }
+
+  // Wave clear
+  if(enemies.length===0&&!dead){
+    wave++;spawnWave(wave);
+    const we=document.getElementById('waveEl');
+    we.textContent=`⚠ IRS WAVE ${wave} ⚠`;we.style.opacity='1';
+    setTimeout(()=>we.style.opacity='0',2200);
+    msg(`📱 Homie: IRS Wave ${wave} incoming! They're sending more!`,3000);
+  }
+
+  hud();
+}
+
+function shoot(x,y,a,spd,t,sz,dmg){
+  bullets.push({x,y,vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,life:t==='pr'?130:72,t,sz,dmg});
+}
+
+function rpgBlast(x,y){
+  puff(x,y,'#f80',35,9);puff(x,y,'#f00',20,6);puff(x,y,'#ff0',15,12);
+  for(let j=enemies.length-1;j>=0;j--){
+    if(dist(x,y,enemies[j].x,enemies[j].y)<110){
+      enemies[j].hp-=99;puff(enemies[j].x,enemies[j].y,'#f80',12);
+      if(enemies[j].hp<=0) enemies.splice(j,1);
+    }
+  }
+}
+
+function die(){
+  dead=true;
+  document.getElementById('deathMsg').textContent=`You lost $${money.toLocaleString()} in illegal money. Should've paid your taxes.`;
+  document.getElementById('deathScr').style.display='flex';
+}
+
+function hud(){
+  document.getElementById('ammoEl').textContent=`🌽 GLOCK: ${ammo}`;
+  document.getElementById('rpgEl').style.display='block';
+  document.getElementById('rpgEl').textContent=`🌽 RPG: ${rpgAmmo}`;
+  document.getElementById('weapEl').textContent=`🔫 ${weapon==='glock'?'SALSA GLOCK':'CORN RPG'} [Q=switch]`;
+  document.getElementById('moneyEl').textContent=`💵 $${money.toLocaleString()} ILLEGAL`;
+  const ip=Object.entries(inv).filter(([,v])=>v>0).map(([k,v])=>`${k}×${v}`).join(' ');
+  document.getElementById('invEl').textContent=`🌮 ${ip||'empty'} [H=heal]`;
+  document.getElementById('hpFill').style.height=clamp(hp,0,100)+'%';
+  const ih=document.getElementById('irsHud');
+  ih.style.display=irsLv>0?'flex':'none';
+  if(irsLv>0) document.getElementById('irsIcons').innerHTML='<span class="irsI">⚠</span>'.repeat(Math.min(irsLv,5));
+}
+
+// ---- DRAW ----
+function draw(){
+  const t=Date.now()/1000;
+  ctx.save();
+  ctx.translate(-Math.round(camX),-Math.round(camY));
+
+  // Ground
+  ctx.fillStyle='#161616';ctx.fillRect(0,0,WW,WH);
+
+  // Sidewalk strips around buildings
+  ctx.fillStyle='#1e1e1e';
+  buildings.forEach(b=>ctx.fillRect(b.x-10,b.y-10,b.w+20,b.h+20));
+
+  // Road center lines
+  ctx.save();ctx.setLineDash([16,16]);ctx.strokeStyle='#242424';ctx.lineWidth=2;
+  for(let c=0;c<7;c++){const x2=streetX(c);ctx.beginPath();ctx.moveTo(x2,0);ctx.lineTo(x2,WH);ctx.stroke();}
+  for(let r=0;r<7;r++){const y2=streetY(r);ctx.beginPath();ctx.moveTo(0,y2);ctx.lineTo(WW,y2);ctx.stroke();}
+  ctx.restore();
+
+  // Buildings
+  buildings.forEach(b=>{
+    ctx.fillStyle=b.col;ctx.fillRect(b.x,b.y,b.w,b.h);
+    ctx.strokeStyle='#2e2e2e';ctx.lineWidth=1;ctx.strokeRect(b.x,b.y,b.w,b.h);
+    ctx.fillStyle='rgba(255,255,90,0.1)';
+    for(let wx=b.x+14;wx<b.x+b.w-18;wx+=22)
+      for(let wy=b.y+12;wy<b.y+b.h-14;wy+=22)
+        ctx.fillRect(wx,wy,10,10);
+    ctx.fillStyle='rgba(255,255,255,0.03)';ctx.fillRect(b.x,b.y,b.w,7);
+  });
+
+  // RPG pickups
+  wPickups.forEach(wp=>{
+    if(wp.done) return;
+    const bob=Math.sin(t*3+wp.bob)*5;
+    ctx.save();ctx.translate(wp.x,wp.y+bob);
+    ctx.shadowColor='#f60';ctx.shadowBlur=22;
+    ctx.fillStyle='#f60';ctx.fillRect(-20,-10,40,20);
+    ctx.shadowBlur=0;
+    ctx.fillStyle='#000';ctx.font='bold 11px Arial';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('🌽 RPG',0,0);
+    ctx.fillStyle='#f60';ctx.font='8px Courier New';
+    ctx.fillText('[ PRESS E ]',0,18);
+    ctx.restore();
+  });
+
+  // Taco stands
+  stands.forEach(s=>{
+    ctx.save();ctx.translate(s.x,s.y);
+    if(!s.done){
+      const p=0.9+Math.sin(t*4)*0.1;
+      ctx.shadowColor='#fa0';ctx.shadowBlur=14*p;
+      ctx.fillStyle='#fa0';ctx.fillRect(-24,-24,48,48);
+      ctx.shadowBlur=0;
+      ctx.fillStyle='#000';ctx.font='bold 22px Arial';
+      ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🌮',0,0);
+      ctx.fillStyle='#fa0';ctx.font='9px Courier New';
+      ctx.fillText(`$${s.money}`,0,30);ctx.fillText('[PRESS E]',0,40);
+    } else {
+      ctx.fillStyle='#3a3a3a';ctx.fillRect(-24,-24,48,48);
+      ctx.fillStyle='#555';ctx.font='8px Courier New';
+      ctx.textAlign='center';ctx.fillText('RESTOCKING',0,30);
+    }
+    ctx.restore();
+  });
+
+  // Ingredients
+  const ie={beef:'🥩',cheese:'🧀',salsa:'🍅',guac:'🥑',beans:'🫘'};
+  ings.forEach(g=>{
+    if(g.done) return;
+    const bob=Math.sin(t*2.4)*3;
+    ctx.save();ctx.translate(g.x,g.y+bob);
+    ctx.shadowColor='#0ff';ctx.shadowBlur=8;
+    ctx.font='18px Arial';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(ie[g.type]||'📦',0,0);ctx.shadowBlur=0;
+    ctx.fillStyle='#0ff';ctx.font='8px Courier New';
+    ctx.fillText(g.type.toUpperCase(),0,17);ctx.fillText('[E]',0,26);
+    ctx.restore();
+  });
+
+  // HOMIES
+  homies.forEach(h=>{
+    const bob=Math.sin(t*1.8+h.bob)*2;
+    ctx.save();ctx.translate(h.x,h.y+bob);
+    const s=h.size;
+    // Shadow
+    ctx.fillStyle='rgba(0,0,0,0.3)';
+    ctx.beginPath();ctx.ellipse(0,s*1.8,s*0.9,4,0,0,Math.PI*2);ctx.fill();
+    // Legs
+    ctx.fillStyle='#111';
+    ctx.fillRect(-s*0.5,s*0.8,s*0.4,s);ctx.fillRect(s*0.1,s*0.8,s*0.4,s);
+    // Shoes
+    ctx.fillStyle='#fff';ctx.fillRect(-s*0.65,s*1.6,s*0.55,s*0.25);ctx.fillRect(s*0,s*1.6,s*0.55,s*0.25);
+    // Hoodie body
+    ctx.fillStyle=h.body;
+    ctx.beginPath();ctx.roundRect(-s*0.75,-s*0.2,s*1.5,s*1.2,5);ctx.fill();
+    // Pocket
+    ctx.fillStyle='rgba(0,0,0,0.3)';ctx.fillRect(-s*0.25,s*0.3,s*0.5,s*0.35);
+    // Arms (out to side - chilling pose)
+    ctx.fillStyle=h.body;
+    ctx.fillRect(-s*1.5,-s*0.1,s*0.8,s*0.35);// left arm angled
+    ctx.fillRect(s*0.7,-s*0.1,s*0.8,s*0.35); // right arm
+    // Hands
+    ctx.fillStyle='#C8A882';
+    ctx.beginPath();ctx.arc(-s*1.4,s*0.1,s*0.25,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(s*1.4,s*0.1,s*0.25,0,Math.PI*2);ctx.fill();
+    // Neck
+    ctx.fillStyle='#C8A882';ctx.fillRect(-s*0.2,-s*0.3,s*0.4,s*0.25);
+    // Head
+    ctx.beginPath();ctx.arc(0,-s*0.75,s*0.65,0,Math.PI*2);ctx.fill();
+    // Hat
+    ctx.fillStyle=h.hat;
+    ctx.beginPath();ctx.arc(0,-s*0.75,s*0.65,Math.PI,Math.PI*2);ctx.fill();
+    ctx.fillRect(-s*0.85,-s*0.75,s*1.7,s*0.25);// brim
+    // Face
+    ctx.fillStyle='#000';
+    ctx.beginPath();ctx.arc(-s*0.22,-s*0.78,s*0.12,0,Math.PI*2);ctx.fill();// left eye
+    ctx.beginPath();ctx.arc(s*0.22,-s*0.78,s*0.12,0,Math.PI*2);ctx.fill();// right eye
+    // Smirk
+    ctx.strokeStyle='#000';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(s*0.1,-s*0.6,s*0.25,0.3,Math.PI-0.3);ctx.stroke();
+    // Chains
+    ctx.strokeStyle='#FFD700';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(0,-s*0.1,s*0.4,0.5,Math.PI-0.5);ctx.stroke();
+    // Label
+    ctx.textAlign='center';
+    if(h.cd<=0){
+      ctx.fillStyle='#0ff';ctx.font='8px Courier New';ctx.fillText('HOMIE',0,-s*1.6);
+      ctx.fillStyle='rgba(0,255,255,0.6)';ctx.font='7px Courier New';ctx.fillText('[PRESS E]',0,-s*1.6-11);
+    } else {
+      ctx.fillStyle='#444';ctx.font='8px Courier New';ctx.fillText('HOMIE',0,-s*1.6);
+    }
+    ctx.restore();
+  });
+
+  // Particles
+  parts.forEach(p=>{
+    const a=p.life/p.ml;ctx.globalAlpha=a;ctx.fillStyle=p.col;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.sz*a,0,Math.PI*2);ctx.fill();
+  });
+  ctx.globalAlpha=1;
+
+  // Bullets
+  bullets.forEach(b=>{
+    if(b.t==='pr'){
+      ctx.save();ctx.translate(b.x,b.y);ctx.rotate(Math.atan2(b.vy,b.vx));
+      ctx.fillStyle='#8B6900';ctx.fillRect(-14,-5,28,10);// tube
+      ctx.fillStyle='#fa0';ctx.shadowColor='#fa0';ctx.shadowBlur=14;
+      ctx.fillRect(-14,-3,8,6);// warhead
+      ctx.shadowBlur=0;ctx.restore();
+    } else {
+      const c=b.t==='pg'?'#ff0':'#f44';
+      ctx.fillStyle=c;ctx.shadowColor=c;ctx.shadowBlur=5;
+      ctx.beginPath();ctx.arc(b.x,b.y,b.sz,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+    }
+  });
+
+  // IRS Enemies
+  enemies.forEach(e=>{
+    ctx.save();ctx.translate(e.x,e.y);ctx.rotate(e.angle+Math.PI/2);
+    const s=e.sz;
+    // Shadow
+    ctx.fillStyle='rgba(0,0,0,0.3)';ctx.beginPath();ctx.ellipse(2,4,s*0.9,5,0,0,Math.PI*2);ctx.fill();
+    // Suit body
+    ctx.fillStyle=e.fl<20?'#1a2e1a':'#1d361d';
+    ctx.beginPath();ctx.ellipse(0,0,s,s*1.25,0,0,Math.PI*2);ctx.fill();
+    // White shirt/tie
+    ctx.fillStyle='#e8e8e8';ctx.fillRect(-2,-s*0.3,4,s*0.6);
+    ctx.fillStyle='#800000';ctx.fillRect(-1,-s*0.3,2,s*0.55);// tie
+    // Head
+    ctx.fillStyle='#C8A882';ctx.beginPath();ctx.arc(0,-s*0.75,s*0.48,0,Math.PI*2);ctx.fill();
+    // Black sunglasses
+    ctx.fillStyle='#111';
+    ctx.fillRect(-s*0.42,-s*0.78,s*0.36,s*0.22);
+    ctx.fillRect(s*0.06,-s*0.78,s*0.36,s*0.22);
+    ctx.strokeStyle='#333';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(-s*0.06,-s*0.67);ctx.lineTo(s*0.06,-s*0.67);ctx.stroke();
+    // IRS badge on chest
+    ctx.fillStyle='#c8a000';ctx.fillRect(-s*0.3,-s*0.1,s*0.6,s*0.4);
+    ctx.fillStyle='#000';ctx.font=`bold ${s*0.28}px Arial`;
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('IRS',-0.5,s*0.1);
+    ctx.restore();
+    // HP dots
+    for(let h=0;h<e.hp;h++){ctx.fillStyle='#0f0';ctx.beginPath();ctx.arc(e.x-4+h*9,e.y-e.sz-10,3,0,Math.PI*2);ctx.fill();}
+  });
+
+  // TACOMAN
+  ctx.save();ctx.translate(P.x,P.y);ctx.rotate(P.angle+Math.PI/2);
+  if(P.inv>0&&Math.floor(P.inv/5)%2===0) ctx.globalAlpha=0.3;
+  const ps=P.size;
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,0.3)';ctx.beginPath();ctx.ellipse(3,7,ps*0.8,ps*0.38,0,0,Math.PI*2);ctx.fill();
+  // Skinny legs
+  ctx.fillStyle='#6B3410';
+  ctx.fillRect(-9,ps*0.42,6,17);ctx.fillRect(4,ps*0.42,6,17);
+  ctx.fillStyle='#2a1000';// shoes
+  ctx.fillRect(-12,ps*0.42+15,10,5);ctx.fillRect(3,ps*0.42+15,10,5);
+  // Skinny arms
+  ctx.fillStyle='#8B4513';
+  ctx.fillRect(-ps-8,-5,13,5);ctx.fillRect(ps-5,-5,13,5);
+  // Dual guns based on weapon
+  if(weapon==='glock'){
+    ctx.fillStyle='#222';ctx.fillRect(-ps-4,-7,16,7);ctx.fillRect(ps-12,-7,16,7);
+    ctx.fillStyle='#c00';ctx.fillRect(-ps-4,-7,5,3);ctx.fillRect(ps+8,-7,5,3);
+    ctx.fillStyle='#444';ctx.fillRect(-ps-16,-6,7,5);ctx.fillRect(ps+9,-6,7,5);
+  } else {
+    // RPG on left, glock on right
+    ctx.fillStyle='#7A5C00';ctx.fillRect(-ps-26,-7,30,10);// RPG tube
+    ctx.fillStyle='#fa0';ctx.fillRect(-ps-28,-5,7,6);// corn warhead
+    ctx.fillStyle='#222';ctx.fillRect(ps-12,-7,16,7);// glock right
+    ctx.fillStyle='#444';ctx.fillRect(ps+9,-6,7,5);
+  }
+  // BIG taco shell
+  ctx.fillStyle='#F5C97A';ctx.beginPath();ctx.ellipse(0,0,ps,ps*0.72,0,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#A0522D';ctx.lineWidth=2.5;ctx.stroke();
+  ctx.strokeStyle='#C8A060';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-ps,0);ctx.lineTo(ps,0);ctx.stroke();
+  // Fillings
+  ctx.fillStyle='#228B22';ctx.beginPath();ctx.ellipse(0,-4,ps*0.7,ps*0.3,0,Math.PI,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#8B2500';ctx.beginPath();ctx.ellipse(0,-6,ps*0.52,ps*0.17,0,Math.PI,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#FFD700';ctx.beginPath();ctx.ellipse(0,-3,ps*0.6,ps*0.12,0,Math.PI,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#e00';[-9,0,9].forEach(ox=>{ctx.beginPath();ctx.arc(ox,-7,2.5,0,Math.PI*2);ctx.fill();});
+  // Eyes
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(-7,-ps*0.22,5,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(7,-ps*0.22,5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#111';ctx.beginPath();ctx.arc(-6,-ps*0.22,2.5,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(8,-ps*0.22,2.5,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#000';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(-11,-ps*0.3);ctx.lineTo(-3,-ps*0.26);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(11,-ps*0.3);ctx.lineTo(3,-ps*0.26);ctx.stroke();
+  ctx.globalAlpha=1;ctx.restore();
+
+  // World border
+  ctx.strokeStyle='#400';ctx.lineWidth=4;ctx.strokeRect(2,2,WW-4,WH-4);
+  ctx.restore();
+
+  minimap();
+
+  // Crosshair
+  const cx=mouse.x,cy=mouse.y;
+  ctx.strokeStyle='rgba(255,60,60,0.9)';ctx.lineWidth=1.5;
+  [[cx-14,cy,cx-5,cy],[cx+5,cy,cx+14,cy],[cx,cy-14,cx,cy-5],[cx,cy+5,cx,cy+14]].forEach(([x1,y1,x2,y2])=>{ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();});
+  ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.stroke();
+}
+
+function minimap(){
+  const mw=170,mh=170,mx=W-mw-8,my=H-mh-8;
+  const sx=mw/WW,sy=mh/WH;
+  ctx.fillStyle='rgba(0,0,0,0.78)';ctx.fillRect(mx,my,mw,mh);
+  ctx.strokeStyle='#2a2a2a';ctx.lineWidth=1;ctx.strokeRect(mx,my,mw,mh);
+  buildings.forEach(b=>{ctx.fillStyle='#252525';ctx.fillRect(mx+b.x*sx,my+b.y*sy,b.w*sx,b.h*sy);});
+  wPickups.forEach(wp=>{if(!wp.done){ctx.fillStyle='#f60';ctx.fillRect(mx+wp.x*sx-2,my+wp.y*sy-2,5,5);}});
+  stands.forEach(s=>{ctx.fillStyle=s.done?'#444':'#fa0';ctx.fillRect(mx+s.x*sx-2,my+s.y*sy-2,5,5);});
+  homies.forEach(h=>{ctx.fillStyle='#0ff';ctx.beginPath();ctx.arc(mx+h.x*sx,my+h.y*sy,2,0,Math.PI*2);ctx.fill();});
+  enemies.forEach(e=>{ctx.fillStyle='#f44';ctx.beginPath();ctx.arc(mx+e.x*sx,my+e.y*sy,2,0,Math.PI*2);ctx.fill();});
+  ctx.fillStyle='#0ff';ctx.beginPath();ctx.arc(mx+P.x*sx,my+P.y*sy,3.5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#444';ctx.font='8px Courier New';ctx.textAlign='left';
+  ctx.fillText('🟡stand 🔵homie 🟠RPG',mx+3,my+mh-4);
+}
+
+// ---- INPUT ----
+const BLOCK=['arrowup','arrowdown','arrowleft','arrowright',' ','w','a','s','d','e','q','h'];
+document.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(BLOCK.includes(k))e.preventDefault();keys[k]=true;});
+document.addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false;});
+canvas.setAttribute('tabindex','0');
+canvas.addEventListener('click',()=>canvas.focus());
+canvas.addEventListener('mousemove',e=>{const r=canvas.getBoundingClientRect();mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top;});
+canvas.addEventListener('mousedown',e=>{if(e.button===0)mouse.down=true;});
+canvas.addEventListener('mouseup',e=>{if(e.button===0)mouse.down=false;});
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+
+// ---- SPLASH ----
+setTimeout(()=>{document.getElementById('whopperScreen').style.display='none';document.getElementById('splash').style.display='flex';},7300);
+function startGame(){document.getElementById('splash').style.display='none';document.getElementById('gameContainer').style.display='block';initGame();canvas.focus();requestAnimationFrame(ts=>{lastT=ts;gameLoop(ts);});}
+function restartGame(){document.getElementById('deathScr').style.display='none';initGame();}
+</script>
+</body>
+</html>

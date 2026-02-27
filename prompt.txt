@@ -1,0 +1,99 @@
+we are building a game
+called grand theft taco:  IRS Collections
+the concept of the game, is you are a taco, with 2 arms capable of duel wierlding weapons, and can steal cars and navigate the city avoiding the irs which is trying to collect its tax money from all our taco stands.
+3d game if possible
+3erd person
+view from up and behind looking down at them from a angle but high enough to see a healthy area around the player
+you play as a taco wielding weapons
+objective. 
+to deliver tacos to your illegal black market underground taco carts around the city
+the obstical is the irs trying to collect taxs on this income, they will search for you all around the city by car, by walking, by bike and if you grow in threat they will militarize heavily wink wink
+you can collect taco ingrediants around the city, and deliver them to taco stands for money to purchase cars motorcycles and weapons. you can find guns randomly around the city by locateing homies, or stealing them from irs members as well as rival hot dog cart clan and the chinese egg role mafia
+when escapeing the irs, you can go into car washs to evade them, and can also go into mechanic shops and paint your ride to disguise it or go to car salesman and swap rides. 
+cars you own legaly can be upgraded with improved armor, nos system that needs refilling, tires that can improve ethier speed, handeling or a medium of the two.
+you can download illegal apps for police radar, red light cameras and speed cameras which could alert the irs, shows a small radius around you however irs cars can detect it if in range.
+money can be used to buy weapons from homies, buy upgrades for the car, purchase hideout propertys and stash houses and more taco stands.
+once we deliver the ingrediants to taco stands they give us the money for the sales since our last vist. busy locations have more irs activity around it. smaller locations with less irs make less money but are safer to collect and operate from.
+if you get busted by the irc ( not killed by rivals ) you loose money on you as well as loose your most profitable taco stand. you must keep atleast 3 at minimum u cant loose those.
+if you get killed by a rival or other means, you just loose the cash on you.
+the game should have only 3 save slots
+the game can be saved 
+just press esacape to a menu with a save option
+when you load into the game even from a save you start at your stash spot or default start location.
+otherwise the game is just like grand theft auto 2
+life in the top left display it as a red circle that depletes by percentage of life
+money is located top left above that
+ammo is located above that
+car health will show if in a car instead of your own
+as well as a icon for nos thurst charges
+irs warning icons will apear top middle to alert you they are actively searching you unless you evade for 45 seconds or evaded in another manner like paint job. by person you can also disguise yourself by adding tommatoes and sour cream at your taco stands in order to make yourself taco surpeme and they wont be looking for you unless you commit a irs offense by collecting more illegal taco stand money or carying unpaid taxs for ingrediants.
+your stash locations that you purchase and grow with can be converted into money laundring business's to create taxable money for purchaseing cars and propertys.
+income should be shown as clean money, and illegal money. 
+alerts of what you should be doing, should pop up as text messages from your homies
+they should be to tell you basic functions about the game
+to give you markers to get ingrediants
+to give you markers to display taco stands
+to give you the app to detect irs and cameras
+to call homies to meet up to purchase wink wink supplies
+irs is looking for illegal money
+and no more then 10k legal money on you at a time
+can deposite in the bank
+when you get into the car, the camera should go out furhter
+when you drive in the car the faster you go the further the camera zooms out, looks great
+press e to get into the car
+a and d to turn
+w to accelerate
+s to reverse
+space to thurst
+e to open menues and select threwout the game or mouse 1
+shooting mouse 1
+reload r
+esc menu
+shift boosters
+left click punch
+right click auto lock to mouse focus 
+mouse should display as a crosshair that you can put anywhere on the screen to shoot
+taco can duel wield
+taco is big enough to duel wield inside a car
+all cars become converatables once the taco gets inside as he rips the roof off.
+tacos love motorcyles for this reason
+tacos can shoot in 360 derees from the viechile or person
+weapons we want in the game.
+extended arm claw
+corn rpg
+rubber chicken nunchucks
+chicken tendy ninja stars shaped as dinosours
+salsa glock
+jalapeno flame thrower
+pineapple mines
+tommatoe grenades
+call in remote hellfire tacos to clear screen of all life ultimate
+sour cream blaster
+skqeuwered pork as a sword
+cow bell when rung, comes from out of the screen and charges at a enemy attacking you, always targets the closest target thats targeting you.
+taco spice smoke bomb for evasion or shield
+hard taco shield armor
+soft taco speed armor
+tacoman should have skinny legs and skinny arms and focus should be on big taco and weapons
+the city should look active with pedestrians walking around and driving
+red light intesections and rules basic traffic
+small variety of cars differnt speeds and handeling
+random homies around the city in side roads
+irs focus in high zones and patrol major roads
+main menu, save buttun, return to game, return to main menu, exit game, and settings
+settings should have graphic options, full screen window mode resoultion options sound options as well as custom control options
+sounds effects should be for all guns fireing
+a few honks from cars and driving sounds
+birds and chatter from pedestriants
+dogs bark once in awhile
+
+when the game loads into a black screen
+load "A Whopper Jr Game"
+then load the game name
+mexican basic taco theme midi music loads
+city with taco stand apears
+picture of taco man wielding the salsa glock and corn rpg launcher with irs behind them chaseing and also running away from taco man
+we want taco man to look like the aggreser
+you can consume taco supplies picked up in order to heal
+
+this is phase 1 of our project
