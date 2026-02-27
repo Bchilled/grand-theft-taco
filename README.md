@@ -8,7 +8,7 @@ A top-down 2D action game where you play as TacoMan — a large taco with skinny
 
 ## 🎮 Play Now
 
-👉 **[Play the Demo](https://YOUR-USERNAME.github.io/grand-theft-taco)**
+👉 **[Play the Demo](https://bchilled.github.io/grand-theft-taco)**
 
 ## Controls
 
